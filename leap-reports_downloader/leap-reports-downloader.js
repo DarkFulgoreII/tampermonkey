@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Leap reports downloader
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  automated downloads for brightspace leap activities
 // @author       You
 // @match        https://leaplti-es.desire2learn.com/Teacher/*/*
@@ -70,29 +70,46 @@ function getReportType(currentURL)
 function generateDetailsDownloadLink(reportType, orlink)
 {
     //first: extract data
-    var p1 = orlink.slice(orlink.indexOf("/"+reportType+"/")+"/"+reportType+"/".length);
-    var lessonid = p1.slice(0,p1.indexOf("/"));
-    var p2 = p1.slice(p1.indexOf("/"));
-    var taxid = p2.slice(p2.indexOf("lo_taxonomyId=")+"lo_taxonomyId=".length);
+    var detailedReportPath = "";
     var reportTypePath = "";
     if (reportType =="StudentOutcomesSummaryReport")
     {
         //https://leaplti-es.desire2learn.com/Teacher/StudentOutcomesSummaryAsCSV/1765389?sort=LastName&sortdir=asc&lo_taxonomyId=1765392&isDetail=True
         reportTypePath = "StudentOutcomesSummaryAsCSV";
+        //https://leaplti-es.desire2learn.com/Teacher/StudentOutcomeDetailReport/1859888/27434?sort=LastName&lo_taxonomyId=1859893
+        detailedReportPath = "StudentOutcomeDetailReport";
     }
     else if (reportType =="ContentSummaryReport")
     {
         //https://leaplti-es.desire2learn.com/Teacher/StudentContentSummaryAsCSV/1765389?sort=Name&sortdir=asc&lo_taxonomyId=1765392&isDetailByContent=True
         reportTypePath = "StudentContentSummaryAsCSV";
+        //https://leaplti-es.desire2learn.com/Teacher/ContentDetailReport/1859888/27434?lo_taxonomyId=1859893
+        detailedReportPath = "ContentDetailReport";
     }
     else if (reportType =="ActivitySummaryReport")
     {
         //https://leaplti-es.desire2learn.com/Teacher/ActivitySummaryReportAsCsv/1765389?lo_taxonomyId=1765392&sort=LastName&sortdir=asc&isDetail=True
         reportTypePath = "ActivitySummaryReportAsCsv";
+        //https://leaplti-es.desire2learn.com/Teacher/ActivitySummaryReportByStudent/1859888/27434?sort=LastName&lo_taxonomyId=1859893
+        detailedReportPath = "ActivitySummaryReportByStudent";
     }
+    var search = "/"+detailedReportPath+"/";
+    var pos = orlink.indexOf(search) + search.length;
+    var p1 = orlink.slice(pos);
+    var lessonid = p1.slice(0,p1.indexOf("/"));
+    var p2 = p1.slice(p1.indexOf("/"));
+    var taxid = p2.slice(p2.indexOf("lo_taxonomyId=")+"lo_taxonomyId=".length);
 
     var newlink = "https://leaplti-es.desire2learn.com/Teacher/"+reportTypePath+"/";
-    newlink += lessonid+"?sort=LastName&sortdir=asc&lo_taxonomyId="+taxid+"&isDetail=True";
+    if (reportType =="ContentSummaryReport")
+    {
+        newlink += lessonid+"?lo_taxonomyId="+taxid+"&isDetail=True";
+    }
+    else
+    {
+        newlink += lessonid+"?sort=LastName&sortdir=asc&lo_taxonomyId="+taxid+"&isDetail=True";
+    }
+
 
     return newlink;
 }
