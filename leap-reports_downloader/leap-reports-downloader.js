@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Leap reports downloader
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.3
 // @description  automated downloads for brightspace leap activities
 // @author       You
 // @match        https://leaplti-es.desire2learn.com/Teacher/*/*
@@ -103,7 +103,7 @@ function generateDetailsDownloadLink(reportType, orlink)
     var newlink = "https://leaplti-es.desire2learn.com/Teacher/"+reportTypePath+"/";
     if (reportType =="ContentSummaryReport")
     {
-        newlink += lessonid+"?lo_taxonomyId="+taxid+"&isDetail=True";
+        newlink += lessonid+"?lo_taxonomyId="+taxid+"&isDetailByContent=True";
     }
     else
     {
